@@ -292,3 +292,108 @@ jobs:
           </LinearLayout>
           EOF_INNER
           
+          mkdir -p app/src/main/res/layout
+          cat > 'app/src/main/res/layout/activity_settings.xml' << 'EOF_INNER'
+          <?xml version="1.0" encoding="utf-8"?>
+          <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+              <LinearLayout
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical"
+                  android:padding="24dp">
+
+                  <TextView
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:text="الإعدادات"
+                      android:textSize="22sp"
+                      android:textStyle="bold"
+                      android:layout_marginBottom="20dp" />
+
+                  <ImageView
+                      android:id="@+id/imgLogoPreview"
+                      android:layout_width="100dp"
+                      android:layout_height="100dp"
+                      android:layout_gravity="center_horizontal"
+                      android:src="@mipmap/ic_launcher" />
+
+                  <TextView
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_marginTop="16dp"
+                      android:text="لون الشعار" />
+
+                  <LinearLayout
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:orientation="horizontal"
+                      android:layout_marginTop="8dp"
+                      android:gravity="center">
+
+                      <Button
+                          android:id="@+id/btnColorPurple"
+                          android:layout_width="48dp"
+                          android:layout_height="48dp"
+                          android:layout_margin="6dp"
+                          android:backgroundTint="#4A148C"
+                          android:text="" />
+
+                      <Button
+                          android:id="@+id/btnColorGold"
+                          android:layout_width="48dp"
+                          android:layout_height="48dp"
+                          android:layout_margin="6dp"
+                          android:backgroundTint="#D6A020"
+                          android:text="" />
+
+                      <Button
+                          android:id="@+id/btnColorGreen"
+                          android:layout_width="48dp"
+                          android:layout_height="48dp"
+                          android:layout_margin="6dp"
+                          android:backgroundTint="#1B5E20"
+                          android:text="" />
+
+                      <Button
+                          android:id="@+id/btnColorBlue"
+                          android:layout_width="48dp"
+                          android:layout_height="48dp"
+                          android:layout_margin="6dp"
+                          android:backgroundTint="#0D47A1"
+                          android:text="" />
+
+                      <Button
+                          android:id="@+id/btnColorRed"
+                          android:layout_width="48dp"
+                          android:layout_height="48dp"
+                          android:layout_margin="6dp"
+                          android:backgroundTint="#B71C1C"
+                          android:text="" />
+
+                  </LinearLayout>
+
+                  <TextView
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_marginTop="24dp"
+                      android:text="اسم التطبيق الظاهر" />
+
+                  <EditText
+                      android:id="@+id/editAppName"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:hint="SMS VIP" />
+
+                  <TextView
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_marginTop="20dp"
+                      android:text="Telegram Bot Token" />
+
+                  <EditText
+                      android:id="@+id/editToken"
+                      android:layout_width="match_parent"
+                      android:layout_he
