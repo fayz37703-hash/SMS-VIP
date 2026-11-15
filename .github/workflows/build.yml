@@ -763,6 +763,118 @@ jobs:
               }
           }
           EOF_INNER
+                    mkdir -p app/src/main/java/com/example/smsvip
+          cat > 'app/src/main/java/com/example/smsvip/SettingsActivity.kt' << 'EOF_INNER'
+          package com.example.smsvip
+
+          import android.graphics.PorterDuff
+          import android.os.Bundle
+          import android.widget.Button
+          import android.widget.EditText
+          import android.widget.ImageView
+          import android.widget.Toast
+          import androidx.appcompat.app.AppCompatActivity
+
+          class SettingsActivity : AppCompatActivity() {
+
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+                  setContentView(R.layout.activity_settings)
+
+                  val imgLogoPreview = findViewById<ImageView>(R.id.imgLogoPreview)
+                  val editAppName = findViewById<EditText>(R.id.editAppName)
+                  val editToken = findViewById<EditText>(R.id.editToken)
+                  val editChatId = findViewById<EditText>(R.id.editChatId)
+                  val btnSave = findViewById<Button>(R.id.btnSave)
+
+                  // تحميل القيم المحفوظة حالياً
+                  editAppName.setText(Prefs.getDisplayName(this))
+                  editToken.setText(Prefs.getToken(this))
+                  editChatId.setText(Prefs.getChatId(this))
+                  imgLogoPreview.setColorFilter(Prefs.getLogoColor(this), PorterDuff.Mode.SRC_ATOP)
+
+                  val colorButtons = mapOf(
+                      R.id.btnColorPurple to 0xFF4A148C.toInt(),
+                      R.id.btnColorGold to 0xFFD6A020.toInt(),
+                      R.id.btnColorGreen to 0xFF1B5E20.toInt(),
+                      R.id.btnColorBlue to 0xFF0D47A1.toInt(),
+                      R.id.btnColorRed to 0xFFB71C1C.toInt()
+                  )
+
+                  for ((id, color) in colorButtons) {
+                      findViewById<Button>(id).setOnClickListener {
+                          Prefs.setLogoColor(this, color)
+                          imgLogoPreview.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
+                      }
+                  }
+
+                  btnSave.setOnClickListener {
+                      val name = editAppName.text.toString().ifBlank { "SMS VIP" }
+                      Prefs.setDisplayName(this, name)
+                      Prefs.setToken(this, editToken.text.toString().trim())
+                      Prefs.setChatId(this, editChatId.text.toString().trim())
+                      Toast.makeText(this, "تم الحفظ", Toast.LENGTH_SHORT).show()
+                      finish()
+                  }
+              }
+          }
+          EOF_INNER
+    mkdir -p app/src/main/java/com/example/smsvip
+          cat > 'app/src/main/java/com/example/smsvip/SettingsActivity.kt' << 'EOF_INNER'
+          package com.example.smsvip
+
+          import android.graphics.PorterDuff
+          import android.os.Bundle
+          import android.widget.Button
+          import android.widget.EditText
+          import android.widget.ImageView
+          import android.widget.Toast
+          import androidx.appcompat.app.AppCompatActivity
+
+          class SettingsActivity : AppCompatActivity() {
+
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+                  setContentView(R.layout.activity_settings)
+
+                  val imgLogoPreview = findViewById<ImageView>(R.id.imgLogoPreview)
+                  val editAppName = findViewById<EditText>(R.id.editAppName)
+                  val editToken = findViewById<EditText>(R.id.editToken)
+                  val editChatId = findViewById<EditText>(R.id.editChatId)
+                  val btnSave = findViewById<Button>(R.id.btnSave)
+
+                  // تحميل القيم المحفوظة حالياً
+                  editAppName.setText(Prefs.getDisplayName(this))
+                  editToken.setText(Prefs.getToken(this))
+                  editChatId.setText(Prefs.getChatId(this))
+                  imgLogoPreview.setColorFilter(Prefs.getLogoColor(this), PorterDuff.Mode.SRC_ATOP)
+
+                  val colorButtons = mapOf(
+                      R.id.btnColorPurple to 0xFF4A148C.toInt(),
+                      R.id.btnColorGold to 0xFFD6A020.toInt(),
+                      R.id.btnColorGreen to 0xFF1B5E20.toInt(),
+                      R.id.btnColorBlue to 0xFF0D47A1.toInt(),
+                      R.id.btnColorRed to 0xFFB71C1C.toInt()
+                  )
+
+                  for ((id, color) in colorButtons) {
+                      findViewById<Button>(id).setOnClickListener {
+                          Prefs.setLogoColor(this, color)
+                          imgLogoPreview.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
+                      }
+                  }
+
+                  btnSave.setOnClickListener {
+                      val name = editAppName.text.toString().ifBlank { "SMS VIP" }
+                      Prefs.setDisplayName(this, name)
+                      Prefs.setToken(this, editToken.text.toString().trim())
+                      Prefs.setChatId(this, editChatId.text.toString().trim())
+                      Toast.makeText(this, "تم الحفظ", Toast.LENGTH_SHORT).show()
+                      finish()
+                  }
+              }
+          }
+          EOF_INNER
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
